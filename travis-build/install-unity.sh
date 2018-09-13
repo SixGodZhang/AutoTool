@@ -3,7 +3,7 @@
 # See $BASE_URL/$HASH/unity-$VERSION-$PLATFORM.ini for complete list
 # of available packages, where PLATFORM is `osx` or `win`
 BASE_URL=https://download.unity3d.com/download_unity/fc1d3344e6ea/
-VERSION=2017.3.0f1
+VERSION=2017.3.1f1
 
 UNITY_OSX_PACKAGE="MacEditorInstaller/Unity-$VERSION.pkg"
 UNITY_WINDOWS_TARGET_PACKAGE="MacEditorTargetInstaller/UnitySetup-Windows-Support-for-Editor-$VERSION.pkg"
