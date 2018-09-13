@@ -1,1 +1,40 @@
-language: csharp
+language: objective-c
+osx_image: xcode9.2
+rvm:
+- 2.2         #see before_install for getting RVM stable.
+
+env:
+- TRAVIS_TAG="1.0" PROJECT_NAME="AutoTool" UNITY_PROJECT_PATH="$(pwd)" UNITY_DOWNLOAD_CACHE="$(pwd)/unity_download_cache" DEPLOY_UNITYPACKAGE="path set in deploy script"
+
+
+cache:
+  directories:
+    - $UNITY_DOWNLOAD_CACHE
+
+    
+before_install:
+- rvm get stable
+- chmod a+x ./travis-build/*.sh
+
+install:
+- cat /etc/hosts
+- ./travis-build/install-unity.sh
+
+script:
+- ./travis-build/build.sh
+- ./travis-build/run-tests.sh
+
+after_success:
+- ./travis-build/export-unity-package.sh
+
+before_deploy:
+- DEPLOY_UNITYPACKAGE="$(ls -a release/*.zip | head -n 1)"
+
+deploy:
+  provider: releases
+  api_key: $GITHUB_TOKEN
+  file: $DEPLOY_UNITYPACKAGE
+  skip_cleanup: true
+  overwrite: true
+  on:
+    tags: true 
