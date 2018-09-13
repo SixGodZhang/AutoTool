@@ -1,10 +1,8 @@
 # 《AutoTool》
 
-![项目进度](http://progressed.io/bar/28?title=progress)
+![项目进度](http://progressed.io/bar/50?title=项目进度) 
 
-Unity 4.7.2f1(Window) | Unity 5.6.4p1 (Window)
-----------------------|-----------------------
-![master](https://img.shields.io/travis/SixGodZhang/AutoTool.svg) | ![master](https://img.shields.io/travis/:user/:repo/:branch.svg)
+![master](https://img.shields.io/travis/SixGodZhang/AutoTool.svg) ![Unity版本](https://img.shields.io/badge/platform-2017.3.1f1-green.svg)
 
 
 ## 什么是AutoTool？
