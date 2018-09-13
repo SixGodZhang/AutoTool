@@ -1,13 +1,19 @@
 # 《AutoTool》
 
-自动化工具是一个基于Unity，整合打包流程的工具
+![项目进度](http://progressed.io/bar/28?title=progress)
 
-## 工具概览
+Unity 4.7.2f1(Window) | Unity 5.6.4p1 (Window)
+----------------------|-----------------------
+![master](https://img.shields.io/travis/SixGodZhang/AutoTool.svg) | ![master](https://img.shields.io/travis/:user/:repo/:branch.svg)
 
-### 工具界面
-![工具界面](https://github.com/SixGodZhang/AutoTool/blob/master/Images/autotool1.png)
+
+## 什么是AutoTool？
+AutoTool是一个基于Unity，建立任务流水线的工具
+
+### 工具预览
+![工具界面预览](https://github.com/SixGodZhang/AutoTool/blob/master/Images/autotool1.png)
 ### 工具源码
-![工具源码](https://github.com/SixGodZhang/AutoTool/blob/master/Images/autotool2.png)
+![工具源码预览](https://github.com/SixGodZhang/AutoTool/blob/master/Images/autotool2.png)
 ## 功能描述
 该工具建立一套简单的任务流水线,添加任务实现BuildTask抽象类即可.
 
