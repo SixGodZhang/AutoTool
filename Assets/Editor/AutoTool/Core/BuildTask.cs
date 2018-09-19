@@ -20,9 +20,12 @@ namespace AutoTool
 
         public abstract TimeSpan Elapsed { get; }
 
+        public virtual bool IsCanReverse { get { return false; } }
+
         public abstract void DoTask();
         public abstract void OnReady();
         public abstract void OnFinal();
+        public virtual void OnReverse() { }
 
         public abstract void OnStatusChanged(TaskStatus status);
 

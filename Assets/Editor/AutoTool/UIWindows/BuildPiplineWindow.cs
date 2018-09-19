@@ -120,14 +120,25 @@ namespace AutoTool
 
             #region 相关测试任务
             //测试
-            for (int i = 0; i < 10; i++)
-            {
-                ATBuildPipline.Instance.AddBuildTask(new TestTask(Instance));
-            }
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    ATBuildPipline.Instance.AddBuildTask(new TestTask(Instance));
+            //}
+
             //测试任务
             //ATBuildPipline.Instance.AddBuildTask(new TestFailureTask(Instance));
             //ATBuildPipline.Instance.AddBuildTask(new TestCallBatByThreadTask(Instance));
             //ATBuildPipline.Instance.AddBuildTask(new TestTask(Instance));
+
+            //测试回滚
+            for (int i = 0; i < 5; i++)
+            {
+                ATBuildPipline.Instance.AddBuildTask(new TestTask(Instance));
+            }
+
+            ATBuildPipline.Instance.AddBuildTask(new TestReverseTask(Instance));
+
+            ATBuildPipline.Instance.AddBuildTask(new TestFailureTask(Instance));
             #endregion
 
             //获取所有任务

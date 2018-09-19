@@ -20,13 +20,28 @@ AutoTool是一个基于Unity，建立任务流水线的工具
 3. **可扩展性高**.  继承实现BuildTask抽象类，即可扩展任务流水线
 4. **使用多线程优化了批处理调用**.  解决了Bat缓冲池满Bat阻塞的情况和调用Bat不会卡死Unity的问题
 5. **封装了Log日志和文件操作**.
+6. **任务回滚**. 当流水线失败时，自动将可回滚的任务进行回滚.(比如svn update为不可回滚任务,文件移动为可回滚任务)
+
+## 使用样例
+工具栏->Editor->BuildAndroidPipline
+
+## 关于任务回滚说明
+只有标记了可回滚的任务才可以回滚,在实现可回滚的任务,只需实现:
+```
+        bool IsCanReverse { get; }//任务是否可回滚
+        void OnReverse();//回滚(当任务失败时执行回滚)
+```
+测试样例请见 TestReverseTask.cs
+测试效果图:
+![回滚测试效果](https://github.com/SixGodZhang/AutoTool/blob/master/Images/ReverseTask.png)
+
 
 ## 待完善
 模块名称 | 状态
 --------|--------
 任务动态配置 | :x:
 多条流水线切换 | :x:
-测试用例 | :x:
+测试用例 | :o:
 
 ## API
 接口名称 | 作用 | 示例

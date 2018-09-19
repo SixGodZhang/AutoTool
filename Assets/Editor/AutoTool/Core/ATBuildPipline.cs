@@ -28,8 +28,11 @@ namespace AutoTool
 
         //所有的任务
         public Queue<IBuildTask> Tasks = new Queue<IBuildTask>();
+        //已经执行过的任务(用于回滚)
+        public List<IBuildTask> ExcutedTasks = new List<IBuildTask>();
+
         //当前执行的任务ID
-        //private int currentTaskID = -1;
+        private int currentTaskID = -1;
 
         public IBuildTask _currentTask = null;
         public IBuildTask CurrentTask {
@@ -86,7 +89,8 @@ namespace AutoTool
             //上次执行任务如果失败，直接返回，管线终止
             if (LastTask == TaskStatus.Failure)
             {
-                EndATBuildPipline();//重置相关属性
+                //EndATBuildPipline();//重置相关属性
+                OnReverseTasks();
                 return;
             }
 
@@ -126,7 +130,8 @@ namespace AutoTool
                             currentTask.OnFinal();
                             currentTask = null;
 
-                            Tasks.Dequeue();
+                            IBuildTask task = Tasks.Dequeue();
+                            ExcutedTasks.Add(task);
                             _currentTask = null;
                             _currentTime = new DateTime();
                             _lastTime = new DateTime();
@@ -149,6 +154,27 @@ namespace AutoTool
             }
 
             
+        }
+
+        /// <summary>
+        /// 回滚任务
+        /// </summary>
+        private void OnReverseTasks()
+        {
+            SysProgressBar.ShowProgressBar(0, taskName: "任务失败,正在进行回滚!");
+            for (int i = ExcutedTasks.Count-1; i >= 0 ; i--)
+            {
+                if (ExcutedTasks[i].IsCanReverse)
+                {//任务回滚
+                    ExcutedTasks[i].OnReverse();
+                }
+                SysProgressBar.ShowProgressBar(i / ExcutedTasks.Count, taskName: "任务失败,正在进行回滚!");
+                System.Threading.Thread.Sleep(5000);
+            }
+
+            SysProgressBar.ShowProgressBar(100, taskName: "任务回滚完毕!");
+
+            EndATBuildPipline();
         }
 
         private bool OnRePaintWindow()
