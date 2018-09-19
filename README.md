@@ -27,7 +27,7 @@ AutoTool是一个基于Unity，建立任务流水线的工具
 
 ## 关于任务回滚说明
 只有标记了可回滚的任务才可以回滚,在实现可回滚的任务,只需实现:
-```
+```csharp
         bool IsCanReverse { get; }//任务是否可回滚
         void OnReverse();//回滚(当任务失败时执行回滚)
 ```
