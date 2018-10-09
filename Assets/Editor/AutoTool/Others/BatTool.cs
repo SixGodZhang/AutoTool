@@ -15,8 +15,22 @@ namespace AutoTool
 
     class BatTool
     {
-        public static string logFile = System.IO.Directory.GetCurrentDirectory() + "/CallBatLog.log";
-        public static StringBuilder returnMsg = new StringBuilder();
+        public static string normalLogFile = System.IO.Directory.GetCurrentDirectory() + "/BatNormalLog.log";
+        public static string errorLogFile = System.IO.Directory.GetCurrentDirectory() + "/BatErrorLog.log";
+        public static bool batExcuteResult = true;//批处理执行结果
+
+        static BatTool()
+        {
+            if (!File.Exists(normalLogFile))
+            {
+                File.Create(normalLogFile);
+            }
+
+            if (!File.Exists(errorLogFile))
+            {
+                File.Create(errorLogFile);
+            }
+        }
 
         /// <summary>
         /// 多线程处理批处理任务(此方法专为任务管线定制而成)
@@ -25,8 +39,8 @@ namespace AutoTool
         /// <param name="batPath"></param>
         public static void CallBatByThread<T>(string batPath, BuildTask<T> task)
         {
-            Func<string,BatResult> callBatThread = CallBatFunc;
-            callBatThread.BeginInvoke(batPath, (ar)=>{
+            Func<string, BatResult> callBatThread = CallBatFunc;
+            callBatThread.BeginInvoke(batPath, (ar) => {
                 BatResult result = callBatThread.EndInvoke(ar);
                 //UnityEngine.Debug.LogError("CallBatByThread result : " + result);
                 switch (result)
@@ -38,13 +52,20 @@ namespace AutoTool
                         task.Status = TaskStatus.Failure;
                         break;
                 }
-            },callBatThread);
+            }, callBatThread);
         }
 
         private static BatResult CallBatFunc(string batPath)
         {
-            return CallBat(batPath)?BatResult.Success:BatResult.Failure;
+            return CallBat(batPath) ? BatResult.Success : BatResult.Failure;
         }
+
+        //[UnityEditor.MenuItem("Editor/测试_批处理错误情况")]
+        //public static void CallBatTestErrorLevel()
+        //{
+        //    UnityEngine.Debug.LogError("bat command result: " + CallBat(AutoToolConstants.BatDic["svnOP_Update"]));
+        //    UnityEngine.Debug.LogError("end...");
+        //}
 
         /// <summary>
         /// 调用批处理
@@ -52,11 +73,9 @@ namespace AutoTool
         /// <param name="batPath">Bat路径</param>
         public static bool CallBat(string batPath)
         {
-            string outPutString = string.Empty;
-            bool resultFlag = false;
-            returnMsg = new StringBuilder();
-            bool excuteResult = true;
-
+            //Initialize
+            batExcuteResult = true;
+              
             Thread t1 = new Thread(new ParameterizedThreadStart(ReadOutput));
             t1.IsBackground = true;
             Thread t2 = new Thread(new ParameterizedThreadStart(ReadError));
@@ -70,44 +89,21 @@ namespace AutoTool
                 pro.StartInfo.CreateNoWindow = true;
                 pro.StartInfo.RedirectStandardOutput = true;
                 pro.StartInfo.RedirectStandardError = true;
+                pro.StartInfo.StandardOutputEncoding = Encoding.GetEncoding("gb2312");
+                pro.StartInfo.StandardErrorEncoding = Encoding.GetEncoding("gb2312");
                 pro.StartInfo.UseShellExecute = false;
 
                 pro.Start();
                 t1.Start(pro);
                 t2.Start(pro);
+
                 pro.WaitForExit();
-
-                //逐行读取标准输出
-                while ((outPutString = pro.StandardOutput.ReadLine()) != null)
+                if (pro.HasExited)
                 {
-                    //+ Environment.NewLine
-                    returnMsg.Append(outPutString + "\n");
-                    resultFlag = true;
+                    pro.Close();
                 }
 
-                if (!resultFlag)
-                {
-                    string error = pro.StandardError.ReadToEnd();
-
-                    if (!string.IsNullOrEmpty(error.Trim()))
-                    {
-                        UnityEngine.Debug.LogError("bat error: " + error.Trim());
-                        excuteResult = false;
-                        returnMsg.Append(error);
-                    }
-                    
-                }
-
-                pro.Close();
-                //string str = get_ansi(returnMsg.ToString());
-
-                string writeLogResult = FileHelper.WriteToFile(logFile, returnMsg.ToString());
-                if (!string.IsNullOrEmpty(writeLogResult))
-                {
-                    excuteResult = false;
-                }
-
-                return excuteResult;
+                return batExcuteResult;
             }
         }
 
@@ -117,17 +113,29 @@ namespace AutoTool
         /// <param name="data"></param>
         public static void ReadError(object data)
         {
-            Process temp = (Process)data;
-            if (temp == null)
+            Process temp = null;
+            if (data is Process)
+            {
+                temp = data as Process;
+            }
+            else
             {
                 return;
             }
 
+            StringBuilder errorLog = new StringBuilder();
             string outputStr = string.Empty;
             while ((outputStr = temp.StandardError.ReadLine()) != null)
             {
-                returnMsg.Append(outputStr);
+                if (!string.IsNullOrEmpty(outputStr.Trim()))
+                {
+                    batExcuteResult = false;
+                }
+
+                errorLog.Append("e: " + outputStr + "\n");
             }
+
+            FileHelper.WriteToFile(errorLogFile, "errorLog: \n DateTime: " + DateTime.Now + "\n" + errorLog, FileMode.Append);
         }
 
         /// <summary>
@@ -136,17 +144,39 @@ namespace AutoTool
         /// <param name="data"></param>
         public static void ReadOutput(object data)
         {
-            Process temp = (Process)data;
-            if (temp == null)
+            Process temp = null;
+            if (data is Process)
+            {
+                temp = data as Process;
+            }
+            else
             {
                 return;
             }
 
-            string outputStr = string.Empty;
-            while ((outputStr = temp.StandardOutput.ReadLine()) != null)
+            StringBuilder integralNormalLog = new StringBuilder();
+            string standardOutputStr = string.Empty;
+            while ((standardOutputStr = temp.StandardOutput.ReadLine()) != null)
             {
-                returnMsg.Append(outputStr);
+                if (standardOutputStr.Contains("errorlevel="))
+                {
+                    //string tp = standardOutputStr.Substring(standardOutputStr.IndexOf("=") + 1, 1);
+                    //UnityEngine.Debug.LogError("tp: " + tp);
+
+                    if ("0".Equals(standardOutputStr.Substring(standardOutputStr.IndexOf("=") + 1, 1)))
+                    {
+                        batExcuteResult = true;
+                    }
+                    else
+                    {
+                        batExcuteResult = false;
+                    }
+                }
+
+                integralNormalLog.Append("d: " + standardOutputStr + "\n");
             }
+
+            FileHelper.WriteToFile(normalLogFile, "normalLog: \n DateTime: " + DateTime.Now + "\n" + integralNormalLog, FileMode.Append);
         }
 
         /// <summary>

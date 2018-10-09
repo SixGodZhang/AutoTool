@@ -66,7 +66,7 @@ namespace AutoTool
                 }
             }
 
-            FileHelper.WriteToFile(autoToolLogPath, System.DateTime.UtcNow + " : " + content, FileMode.Append);
+            FileHelper.WriteToFile(autoToolLogPath, System.DateTime.Now + " : " + content, FileMode.Append);
         }
 
 
