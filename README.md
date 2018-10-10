@@ -36,12 +36,20 @@ AutoTool是一个基于Unity，建立任务流水线的工具
 ![回滚测试效果](https://github.com/SixGodZhang/AutoTool/blob/master/Images/ReverseTask.png)
 
 
-## 待完善
+## 任务状态
 模块名称 | 状态
 --------|--------
-任务动态配置 | :x:
-多条流水线切换 | :x:
+任务动态配置 | :o:
+多条流水线切换 | :o:
 测试用例 | :o:
+
+
+## 一些操作步骤
+
+### 添加任务链
+1. 增加任务链枚举类型. 在AutoToolConstants中的TaskChain中添加任务类型
+2. 绘制任务链的操作UI. 在BuildPiplineWindow中的OnGUI增加一个方法绘制任务链需要的UI
+3. 添加任务到任务链中. 在 中的AddTasksToATBuildPipline中添加任务，具体的任务都在Task文件夹下
 
 ## API
 接口名称 | 作用 | 示例
