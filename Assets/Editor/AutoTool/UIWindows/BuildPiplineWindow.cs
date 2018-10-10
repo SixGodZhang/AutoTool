@@ -16,11 +16,7 @@ namespace AutoTool
         #region UI控件--(映射)-->需要进行的操作
         public bool isExcuteATBuildPipline = false;
 
-        public bool isOpenAccelerateOP = false;
-
         public bool isSelectedCompileCode_compile = true;
-
-        public bool isSelectedUpdate_revert = false;
 
         public bool isSelectedUpdate_update = true;
 
@@ -28,7 +24,28 @@ namespace AutoTool
 
         public int selectBuildPlatform = 0;
 
-        private static bool currentToggleState = false;
+        private int _selectTaskChainType = 0;
+        private int SelectTaskChainType
+        {
+            set
+            {
+                if (value != _selectTaskChainType)
+                {
+                    //值发生变化
+                    buildTasks.Clear();
+                    ATBuildPipline.Instance.ClearBuildTasks();
+                }
+
+                _selectTaskChainType = value;
+            }
+
+            get
+            {
+                return _selectTaskChainType;
+            }
+        }
+
+        
 
         private bool isSettingBatVariable = false;//配置
 
@@ -39,6 +56,7 @@ namespace AutoTool
         #region 其他
         private static string Root = Environment.CurrentDirectory;
         string line = new string('_', 150);//分割线
+        string[] chainTypes = Enum.GetNames(typeof(TaskChain));//与枚举一一对应
         #endregion
 
         #region 样式
@@ -108,38 +126,59 @@ namespace AutoTool
         /// <summary>
         /// 添加任务到任务管线中
         /// </summary>
-        private void AddTasksToATBuildPipline()
+        private void AddTasksToATBuildPipline(TaskChain taskChain)
         {
             buildTasks.Clear();
             ATBuildPipline.Instance.ClearBuildTasks();
 
-            #region Android任务链
-            //TODO
-            //主要任务链
-            #endregion
 
-            #region 相关测试任务
-            //测试
-            //for (int i = 0; i < 10; i++)
-            //{
-            //    ATBuildPipline.Instance.AddBuildTask(new TestTask(Instance));
-            //}
-
-            //测试任务
-            //ATBuildPipline.Instance.AddBuildTask(new TestFailureTask(Instance));
-            //ATBuildPipline.Instance.AddBuildTask(new TestCallBatByThreadTask(Instance));
-            //ATBuildPipline.Instance.AddBuildTask(new TestTask(Instance));
-
-            //测试回滚
-            for (int i = 0; i < 5; i++)
+            switch (taskChain)
             {
-                ATBuildPipline.Instance.AddBuildTask(new TestTask(Instance));
+                case TaskChain.默认任务链:
+                    {
+                        #region 默认任务链
+                        //TODO
+                        //主要任务链
+                        #endregion
+                    }
+                    break;
+                case TaskChain.资源打包:
+                    {
+
+                    }
+                    break;
+                case TaskChain.APK出包:
+                    {
+
+                    }
+                    break;
+                case TaskChain.测试任务链:
+                    {
+                        #region 相关测试任务
+                        //测试
+                        //for (int i = 0; i < 10; i++)
+                        //{
+                        //    ATBuildPipline.Instance.AddBuildTask(new TestTask(Instance));
+                        //}
+
+                        //测试任务
+                        //ATBuildPipline.Instance.AddBuildTask(new TestFailureTask(Instance));
+                        //ATBuildPipline.Instance.AddBuildTask(new TestCallBatByThreadTask(Instance));
+                        //ATBuildPipline.Instance.AddBuildTask(new TestTask(Instance));
+
+                        //测试回滚
+                        for (int i = 0; i < 5; i++)
+                        {
+                            ATBuildPipline.Instance.AddBuildTask(new TestTask(Instance));
+                        }
+
+                        ATBuildPipline.Instance.AddBuildTask(new TestReverseTask(Instance));
+
+                        ATBuildPipline.Instance.AddBuildTask(new TestFailureTask(Instance));
+                        #endregion
+                    }
+                    break;
             }
-
-            ATBuildPipline.Instance.AddBuildTask(new TestReverseTask(Instance));
-
-            ATBuildPipline.Instance.AddBuildTask(new TestFailureTask(Instance));
-            #endregion
 
             //获取所有任务
             foreach (var item in ATBuildPipline.Instance.Tasks)
@@ -234,36 +273,28 @@ namespace AutoTool
             EditorGUILayout.LabelField(line);
             GUILayout.Space(10);
 
-
             EditorGUILayout.BeginHorizontal();
-            selectBuildPlatform = EditorGUILayout.Popup("Platform", selectBuildPlatform, AutoToolConstants.BuildPlatform, GUILayout.Width(400));
-            selectBuildChannel = EditorGUILayout.Popup("Channel", selectBuildChannel, AutoToolConstants.BuildChannel, GUILayout.Width(400));
+            SelectTaskChainType = EditorGUILayout.Popup("任务链类型",SelectTaskChainType, Enum.GetNames(typeof(TaskChain)), GUILayout.Width(400));
             EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.Separator();
-            EditorGUILayout.BeginHorizontal();
-            currentToggleState = isSelectedUpdate_update;//保留当前状态
-            isSelectedUpdate_update = EditorGUILayout.Toggle("工程更新(保留本地修改)", isSelectedUpdate_update);
-            isSelectedUpdate_revert = EditorGUILayout.Toggle("本地仓库还原", isSelectedUpdate_revert);
-            if (isSelectedUpdate_update == isSelectedUpdate_revert && isSelectedUpdate_update == true)
-            {
-                isSelectedUpdate_revert = currentToggleState;
-                isSelectedUpdate_update = !currentToggleState;
-                EditorUtility.DisplayDialog("提示", "不能同时选择两项更新!", "OK");
-            }
-            EditorGUILayout.EndHorizontal();
-            isSelectedCompileCode_compile = EditorGUILayout.Toggle("编译代码", isSelectedCompileCode_compile);
-
+            EditorGUILayout.LabelField(line);
             GUILayout.Space(10);
 
-            EditorGUILayout.BeginHorizontal();
-            //此操作将不会更新NGUI/Example,NGUI/Scripts,StreamingAssets/pc,StremingAssets/ios
-            GUILayout.FlexibleSpace();
-            isOpenAccelerateOP = EditorGUILayout.Toggle("是否开启加速操作", isOpenAccelerateOP);
-            GUILayout.FlexibleSpace();
-            EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.LabelField(line);
+            if (chainTypes[SelectTaskChainType].Equals(Enum.GetName(typeof(TaskChain), TaskChain.默认任务链)))
+            {
+                OnPaintDefaultChainUI();
+            }
+            else if (chainTypes[SelectTaskChainType].Equals(Enum.GetName(typeof(TaskChain), TaskChain.资源打包)))
+            {
+                OnPaintResourceChainUI();
+            }
+            else if (chainTypes[SelectTaskChainType].Equals(Enum.GetName(typeof(TaskChain), TaskChain.APK出包)))
+            {
+                OnPaintAPKChainUI();
+            }
+            else if (chainTypes[SelectTaskChainType].Equals(Enum.GetName(typeof(TaskChain), TaskChain.测试任务链)))
+            {
+                OnPaintTestChainUI();
+            }
 
             EditorGUILayout.BeginHorizontal();
             GUILayout.FlexibleSpace();
@@ -276,7 +307,41 @@ namespace AutoTool
 
             if (GUILayout.Button("添加任务", GUILayout.Width(200)))
             {
-                AddTasksToATBuildPipline();
+                switch (SelectTaskChainType)
+                {
+                    case 0:
+                        {
+                            if (chainTypes[0].Equals(Enum.GetName(typeof(TaskChain),TaskChain.默认任务链)))
+                            {//验证(可以省略,此处是为了验证0是否是默认任务链)
+                                AddTasksToATBuildPipline(TaskChain.默认任务链);
+                            }
+                        }
+                        break;
+                    case 1:
+                        {
+                            if (chainTypes[1].Equals(Enum.GetName(typeof(TaskChain), TaskChain.资源打包)))
+                            {//验证(可以省略,此处是为了验证0是否是默认任务链)
+                                AddTasksToATBuildPipline(TaskChain.资源打包);
+                            }
+                        }
+                        break;
+                    case 2:
+                        {
+                            if (chainTypes[2].Equals(Enum.GetName(typeof(TaskChain), TaskChain.APK出包)))
+                            {//验证(可以省略,此处是为了验证0是否是默认任务链)
+                                AddTasksToATBuildPipline(TaskChain.APK出包);
+                            }
+                        }
+                        break;
+                    case 3:
+                        {
+                            if (chainTypes[3].Equals(Enum.GetName(typeof(TaskChain), TaskChain.测试任务链)))
+                            {//验证(可以省略,此处是为了验证0是否是默认任务链)
+                                AddTasksToATBuildPipline(TaskChain.测试任务链);
+                            }
+                        }
+                        break;
+                }
             }
 
             if (GUILayout.Button("开始打包", GUILayout.Width(200)))
@@ -290,7 +355,7 @@ namespace AutoTool
             //////////////////////////////////////////////////////////////////////
             ///启动管线要求：
             ///isExcuteATBuildPipline = true 开启管线
-            ///ATBuildPipline.Instance.PiplineStatus == ATBuildPiplineStatus.Occupied 管线未被占用
+            ///ATBuildPipline.Instance.PiplineStatus == ATBuildPiplineStatus.Unoccupied 管线未被占用
             /////////////////////////////////////////////////////////////////////
             if (isExcuteATBuildPipline)
             {//执行任务
@@ -313,7 +378,7 @@ namespace AutoTool
                 //当前执行任务
                 EditorGUILayout.BeginVertical("box");
                 {
-                    EditorGUILayout.LabelField(string.Format("=======> {0}", ATBuildPipline.Instance.CurrentTask == null ? "当前无任务" : ATBuildPipline.Instance.CurrentTask.Name));
+                    EditorGUILayout.LabelField(string.Format("=======> {0}", ATBuildPipline.Instance.CurrentTask == null ? "当前无任务" : ATBuildPipline.Instance.CurrentTask.Name),_fontGreenStyle);
                 }
                 EditorGUILayout.EndVertical();
 
@@ -344,6 +409,51 @@ namespace AutoTool
             EditorGUILayout.EndScrollView();
 
             EditorGUILayout.EndVertical();
+        }
+
+        /// <summary>
+        /// 测试任务链
+        /// </summary>
+        private void OnPaintTestChainUI()
+        {
+            
+        }
+
+        /// <summary>
+        /// APK任务链
+        /// </summary>
+        private void OnPaintAPKChainUI()
+        {
+            
+        }
+
+        /// <summary>
+        /// 资源任务链
+        /// </summary>
+        private void OnPaintResourceChainUI()
+        {
+            
+        }
+
+        /// <summary>
+        /// 绘制默认任务链GUI
+        /// </summary>
+        private void OnPaintDefaultChainUI()
+        {
+            EditorGUILayout.BeginHorizontal();
+            selectBuildPlatform = EditorGUILayout.Popup("Platform", selectBuildPlatform, AutoToolConstants.BuildPlatform, GUILayout.Width(400));
+            selectBuildChannel = EditorGUILayout.Popup("Channel", selectBuildChannel, AutoToolConstants.BuildChannel, GUILayout.Width(400));
+            EditorGUILayout.EndHorizontal();
+
+            EditorGUILayout.Separator();
+
+            EditorGUILayout.BeginHorizontal();
+            isSelectedUpdate_update = EditorGUILayout.Toggle("工程更新(保留本地修改)", isSelectedUpdate_update);
+            EditorGUILayout.EndHorizontal();
+
+            isSelectedCompileCode_compile = EditorGUILayout.Toggle("编译代码", isSelectedCompileCode_compile);
+            GUILayout.Space(10);
+            EditorGUILayout.LabelField(line);
         }
 
         private void ResetKeys()

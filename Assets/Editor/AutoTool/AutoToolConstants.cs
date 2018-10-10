@@ -11,6 +11,14 @@ namespace AutoTool
         RemoveFolderFail             = 10004,
     }
 
+    public enum TaskChain
+    {
+        默认任务链                   = 20000,
+        资源打包                     = 20001,
+        APK出包                      = 20002,
+        测试任务链                   = 20003,
+    }
+
     //此处采用结构体的原因
     //1.结构体存储在堆栈中，查询速度快
     //2.struct.属性 = 属性,而枚举 enum.枚举值.ToString()
