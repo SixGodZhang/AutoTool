@@ -499,7 +499,7 @@ namespace AutoTool
 
         private void ShowLogDirectory()
         {
-            FileHelper.ShowExplorerWindow(AutoToolConstants.logPath);
+            FileHelper.ShowExplorerWindow(AutoToolConstants.logPath + "/" + string.Format("Log-{0}", DateTime.Now.ToString("yyyyMMdd")));
         }
 
         /// <summary>

@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿#define TRACE
+
+using System.Diagnostics;
 using System.IO;
 
 namespace AutoTool
@@ -53,15 +55,15 @@ namespace AutoTool
             }
         }
 
-        //[MenuItem("Editor/Log测试")]
-        //public static void LogTest()
-        //{
-        //    UnityEngine.Debug.LogError(AutoToolConstants.logPath);
+        [UnityEditor.MenuItem("Editor/Log测试")]
+        public static void LogTest()
+        {
+            UnityEngine.Debug.LogError(AutoToolConstants.logPath);
 
-        //    ATLog.Debug("this is debug log !");
-        //    ATLog.Warn("this is warn log !");
-        //    ATLog.Error("this is error log !");
-        //    ATLog.Info("this is info log !");
-        //}
+            ATLog.Debug("this is debug log !");
+            ATLog.Warn("this is warn log !");
+            ATLog.Error("this is error log !");
+            ATLog.Info("this is info log !");
+        }
     }
 }
