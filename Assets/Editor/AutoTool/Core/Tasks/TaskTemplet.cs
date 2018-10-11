@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
-using System.Text;
 using UnityEditor;
 
 namespace AutoTool
@@ -72,7 +70,7 @@ namespace AutoTool
             //主要任务内容
             //批处理不需要手动添加任务状态的改变
             //非批处理任务需手动添加任务状态的改变
-            ATLog.Log("任务: " + Name + "Begin...");
+            ATLog.Info("任务: " + Name + "Begin...");
         }
 
         public override void OnReady()
@@ -90,7 +88,7 @@ namespace AutoTool
         public override void OnStatusChanged(TaskStatus status)
         {
             _status = status;
-            ATLog.Log("Task: " + Name + "   Status: " + status.ToString());
+            ATLog.Info("Task: " + Name + "   Status: " + status.ToString());
             if (_currentWindow != null)
             {
                 // UnityEngine.Debug.Log("重绘窗口!");

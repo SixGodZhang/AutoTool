@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using UnityEditor;
 using UnityEngine;
 
@@ -190,6 +188,7 @@ namespace AutoTool
         private void ClearLog()
         {
             ATLog.ClearLog();
+            EditorUtility.DisplayDialog("提示", "Log清理完成!", "OK");
         }
 
 
@@ -202,7 +201,7 @@ namespace AutoTool
             if (currentProcess.MainModule.FileName.Replace("\\", "/") != UnityEXE || !AutoToolConstants.UnityVersion.Equals(Application.unityVersion))
             {
                 EditorUtility.DisplayDialog("错误", "未选择"+AutoToolConstants.UnityVersion+"的Unity.exe!", "OK");
-                ATLog.Log(ErrorCode.NotFoundUnityEXE);
+                ATLog.Warn("未找到相应版本的Unity!");
                 UnityEXE = null;
                 return;
             }
@@ -441,8 +440,8 @@ namespace AutoTool
         private void OnPaintDefaultChainUI()
         {
             EditorGUILayout.BeginHorizontal();
-            selectBuildPlatform = EditorGUILayout.Popup("Platform", selectBuildPlatform, AutoToolConstants.BuildPlatform, GUILayout.Width(400));
-            selectBuildChannel = EditorGUILayout.Popup("Channel", selectBuildChannel, AutoToolConstants.BuildChannel, GUILayout.Width(400));
+            selectBuildPlatform = EditorGUILayout.Popup("Platform", selectBuildPlatform, Enum.GetNames(typeof(BuildPlatform)), GUILayout.Width(400));
+            selectBuildChannel = EditorGUILayout.Popup("Channel", selectBuildChannel, Enum.GetNames(typeof(BuildChannel)), GUILayout.Width(400));
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.Separator();
@@ -500,7 +499,7 @@ namespace AutoTool
 
         private void ShowLogDirectory()
         {
-            FileHelper.ShowExplorerWindow(ATLog.autoToolLogPath);
+            FileHelper.ShowExplorerWindow(AutoToolConstants.logPath);
         }
 
         /// <summary>

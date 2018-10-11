@@ -76,6 +76,7 @@ namespace AutoTool
             //Initialize
             batExcuteResult = true;
               
+            
             Thread t1 = new Thread(new ParameterizedThreadStart(ReadOutput));
             t1.IsBackground = true;
             Thread t2 = new Thread(new ParameterizedThreadStart(ReadError));

@@ -1,111 +1,67 @@
-﻿
-
-using System;
+﻿using System.Diagnostics;
 using System.IO;
-using UnityEditor;
-using UnityEngine;
 
 namespace AutoTool
 {
     class ATLog
     {
-        public static string autoToolLogPath = System.Environment.CurrentDirectory + "/autotoolLog.log";
-        public static bool isPrintLog = true;//打印Log开关
+        static ATLog()
+        {
+            Trace.Listeners.Clear();
+            Trace.Listeners.Add(new ATLogListener());
+        }
 
+        private static bool m_openLog = true;
         /// <summary>
-        /// 清除Log日志
+        /// Log开关
         /// </summary>
+        public static bool OpenLog
+        {
+            get { return m_openLog; }
+            set { m_openLog = value; }
+        }
+
+        public static void Debug(object msg)
+        {
+            Trace.WriteLineIf(m_openLog, msg, "Debug");
+        }
+
+        public static void Error(object msg)
+        {
+            Trace.WriteLineIf(m_openLog, msg, "Error");
+        }
+
+        public static void Info(object msg)
+        {
+            Trace.WriteLineIf(m_openLog, msg, "Info");
+        }
+
+        public static void Warn(object msg)
+        {
+            Trace.WriteLineIf(m_openLog, msg, "Warn");
+        }
+
         public static void ClearLog()
         {
-            string target = autoToolLogPath.Replace("/", "\\");
-            try
+            if (Directory.Exists(AutoToolConstants.logPath))
             {
-                if (File.Exists(target))
+                string[] logsPath = Directory.GetFiles(AutoToolConstants.logPath);
+                for (int i = 0; i < logsPath.Length; i++)
                 {
-                    File.Delete(target);
-                    return;
+                    File.Delete(logsPath[i]);
                 }
             }
-            catch (Exception ex)
-            {
-                Debug.LogError(ex.Message);
-            }
-            finally
-            {
-
-            }
-
-            EditorUtility.DisplayDialog("提示", "Log清理完成!", "OK");
         }
 
-        /// <summary>
-        /// Log
-        /// </summary>
-        /// <param name="content"></param>
-        public static void Log(string content)
-        {
-            FileStream fs = null;
-            try
-            {
-                if (!File.Exists(autoToolLogPath))
-                {
-                    fs = File.Create(autoToolLogPath);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError("创建Log文件失败!");
-                Debug.LogError(ex.Message); 
-                EditorUtility.DisplayDialog("错误", "创建Log文件失败!", "OK");
-            }
-            finally
-            {
-                if (fs != null)
-                {
-                    fs.Close();
-                }
-            }
+        //[MenuItem("Editor/Log测试")]
+        //public static void LogTest()
+        //{
+        //    UnityEngine.Debug.LogError(AutoToolConstants.logPath);
 
-            FileHelper.WriteToFile(autoToolLogPath, System.DateTime.Now + " : " + content, FileMode.Append);
-        }
-
-
-
-        /// <summary>
-        /// 根据Log编码,输出到Log日志
-        /// </summary>
-        /// <param name="errorCode">Log编码</param>
-        public static void Log(ErrorCode errorCode)
-        {
-            if (!isPrintLog)
-            {
-                Debug.LogError("已经关闭Log日志!");
-                return;
-            }
-
-            FileStream fs = null;
-            try
-            {
-                if (!File.Exists(autoToolLogPath))
-                {
-                    fs = File.Create(autoToolLogPath);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError("创建Log文件失败!");
-                Debug.LogError(ex.Message);
-                EditorUtility.DisplayDialog("错误", "创建Log文件失败!", "OK");
-            }
-            finally
-            {
-                if (fs != null)
-                {
-                    fs.Close();
-                }
-            }
-
-            FileHelper.WriteToFile(autoToolLogPath, System.DateTime.Now + " : " + AutoToolConstants.ErrorCodeDict[errorCode], FileMode.Append);
-        }
+        //    ATLog.Debug("this is debug log !");
+        //    ATLog.Warn("this is warn log !");
+        //    ATLog.Error("this is error log !");
+        //    ATLog.Info("this is info log !");
+        //}
     }
 }

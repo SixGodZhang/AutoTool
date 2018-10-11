@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEditor;
-using UnityEngine;
 
 namespace AutoTool
 {
@@ -161,6 +157,7 @@ namespace AutoTool
         /// </summary>
         private void OnReverseTasks()
         {
+            ATLog.Info("=======>进行任务回滚");
             SysProgressBar.ShowProgressBar(0, taskName: "任务失败,正在进行回滚!");
             for (int i = ExcutedTasks.Count-1; i >= 0 ; i--)
             {
@@ -200,6 +197,7 @@ namespace AutoTool
         {
             PiplineStatus = ATBuildPiplineStatus.Unoccupied;
             BuildPiplineWindow.Instance.isExcuteATBuildPipline = false;
+            ATLog.Info("=======>任务管线结束!");
         }
     }
 }

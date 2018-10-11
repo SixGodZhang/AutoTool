@@ -35,5 +35,4 @@ sysinfo.txt
 *.apk
 *.unitypackage
 
-autotoolLog.log
-/autotoolLog.log
+/Logs/

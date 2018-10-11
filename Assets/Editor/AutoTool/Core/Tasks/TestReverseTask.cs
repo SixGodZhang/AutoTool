@@ -76,7 +76,7 @@ namespace AutoTool
             //主要任务内容
             //批处理不需要手动添加任务状态的改变
             //非批处理任务需手动添加任务状态的改变
-            FileHelper.MoveFolder(System.Environment.CurrentDirectory + "/a", System.Environment.CurrentDirectory + "/aa");
+            //FileHelper.MoveFolder(System.Environment.CurrentDirectory + "/a", System.Environment.CurrentDirectory + "/aa");
             //强行设置状态
             OnStatusChanged(TaskStatus.Success);
         }
@@ -96,7 +96,7 @@ namespace AutoTool
         public override void OnStatusChanged(TaskStatus status)
         {
             _status = status;
-            ATLog.Log("Task: " + Name + "   Status: " + status.ToString());
+            ATLog.Info("Task: " + Name + "   Status: " + status.ToString());
             if (_currentWindow != null)
             {
                 // UnityEngine.Debug.Log("重绘窗口!");
@@ -110,7 +110,7 @@ namespace AutoTool
         /// </summary>
         public override void OnReverse()
         {
-            FileHelper.MoveFolder(System.Environment.CurrentDirectory + "/aa", System.Environment.CurrentDirectory + "/a");
+            //FileHelper.MoveFolder(System.Environment.CurrentDirectory + "/aa", System.Environment.CurrentDirectory + "/a");
         }
     }
 }

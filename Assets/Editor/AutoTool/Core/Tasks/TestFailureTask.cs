@@ -65,7 +65,7 @@ namespace AutoTool
 
         public override void DoTask()
         {
-            ATLog.Log("任务: " + Name + "Begin...");
+            ATLog.Info("任务: " + Name + "Begin...");
             System.Threading.Thread.Sleep(5000);
 
             _status = TaskStatus.Failure;
@@ -86,7 +86,7 @@ namespace AutoTool
         public override void OnStatusChanged(TaskStatus status)
         {
             _status = status;
-            ATLog.Log("Task: " + Name + "   Status: " + status.ToString());
+            ATLog.Info("Task: " + Name + "   Status: " + status.ToString());
             if (_currentWindow != null)
             {
                 _currentWindow.Repaint();

@@ -47,7 +47,7 @@ namespace AutoTool
             catch (Exception ex)
             {
                 result = ex.Message;
-                ATLog.Log("WriteToFile(): \n filePath = " + filePath + ",\n content = " + content);
+                ATLog.Error(ex);
                 return result;
             }
 
@@ -91,7 +91,7 @@ namespace AutoTool
             }
             else
             {
-                ATLog.Log("MoveFolder: " + "\n sPAth: " + sPath + "\n tPath: " + tPath + "\n error: " + sPath + "Not Found");
+                ATLog.Error("路径不存在! \r\n" + sPath);
                 Debug.LogError(sPath + " : Not Found");
             }
         }
@@ -117,7 +117,7 @@ namespace AutoTool
 
             if (!Directory.Exists(path))
             {
-                ATLog.Log("文件夹 " + path + ": " + ErrorCode.RemoveFolderFail);
+                ATLog.Warn("文件夹不存在! \r\n " + path);
                 return;
             }
 

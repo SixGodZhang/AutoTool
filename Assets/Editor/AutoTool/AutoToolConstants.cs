@@ -2,21 +2,27 @@
 
 namespace AutoTool
 {
-    public enum ErrorCode
-    {
-        NONE                         = 10000,
-        ConfigBatError               = 10001,
-        NotFoundUnityEXE             = 10002,
-        CloseLog                     = 10003,
-        RemoveFolderFail             = 10004,
-    }
-
     public enum TaskChain
     {
         默认任务链                   = 20000,
         资源打包                     = 20001,
         APK出包                      = 20002,
         测试任务链                   = 20003,
+    }
+
+    public enum BuildChannel
+    {
+        应用宝                       = 30001,
+        华为                         = 30002,
+        vivo                         = 30003,
+        oppo                         = 30004,
+    }
+
+    public enum BuildPlatform
+    {
+        Android                      = 40001,
+        IOS                          = 40002,
+        PC                           = 40003,
     }
 
     //此处采用结构体的原因
@@ -45,28 +51,7 @@ namespace AutoTool
     public class AutoToolConstants
     {
         public static string UnityVersion = "4.7.2f1";
-
-        public static string[] BuildChannel ={
-            "应用宝",
-            "华为",
-            "vivo",
-            "oppo"
-        };
-
-        public static string[] BuildPlatform ={
-            "Android",
-            "IOS",
-            "PC"
-        };
-
-        public static Dictionary<ErrorCode, string> ErrorCodeDict = new Dictionary<ErrorCode, string>
-        {
-            { ErrorCode.NONE,"默认Error,测试使用!" },
-            { ErrorCode.ConfigBatError,"配置脚本出错!"},
-            { ErrorCode.NotFoundUnityEXE,"未找到相应版本的Unity!"},
-            { ErrorCode.CloseLog,"关闭Log!"},
-            { ErrorCode.RemoveFolderFail,"删除文件夹失败!"},
-        };
+        public static string logPath = System.Environment.CurrentDirectory + "/Logs";
 
         #region Bat脚本 路径
         public static string BatRoot = System.Environment.CurrentDirectory + "\\AutoTools";
